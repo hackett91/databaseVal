@@ -1,0 +1,16 @@
+
+-- if the value is number
+Select nvl(supplier_name, 'No supplier') 
+FROM Product;
+nvl2(supplier_name,'supplier known', 'supplier not known');
+
+SELECT product_name, CASE	When unit_price > 150 THEN 'Expensive'
+							When unite_prie BETWEEN 70 and 150 THEN 'Mid_Range'
+							ELSE 'budget'
+							End
+							from product;
+
+
+
+
+

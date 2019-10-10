@@ -1,0 +1,537 @@
+
+
+ connect dt2283group_g/dt2283group_g;
+Drop Table Billing CASCADE CONSTRAINTS PURGE;
+Drop Table ChargeType CASCADE CONSTRAINTS PURGE;
+Drop Table Contract CASCADE CONSTRAINTS PURGE;
+Drop Table Customer CASCADE CONSTRAINTS PURGE;
+Drop Table EmailSent CASCADE CONSTRAINTS PURGE;
+Drop Table Employee CASCADE CONSTRAINTS PURGE;
+Drop Table Phone CASCADE CONSTRAINTS PURGE;
+Drop Table PhoneManufacturer CASCADE CONSTRAINTS PURGE;
+Drop Table PhoneSimCard CASCADE CONSTRAINTS PURGE;
+Drop Table PhoneType CASCADE CONSTRAINTS PURGE;
+Drop Table Position CASCADE CONSTRAINTS PURGE;
+Drop Table PostMail CASCADE CONSTRAINTS PURGE;
+Drop Table Purchase CASCADE CONSTRAINTS PURGE;
+Drop Table ReturnOrder CASCADE CONSTRAINTS PURGE;
+Drop Table Service CASCADE CONSTRAINTS PURGE;
+Drop Table Store CASCADE CONSTRAINTS PURGE;
+Drop Table Usage CASCADE CONSTRAINTS PURGE;
+
+
+
+
+-- tables
+-- Table: Billing
+CREATE TABLE Billing (
+    billing_id integer  NOT NULL,
+    amount_paid number(5,2)  NOT NULL,
+    billing_date timestamp  NOT NULL,
+    CF number(5,2)  NOT NULL,
+    Contract_contract_id integer  NOT NULL,
+    CONSTRAINT Billing_pk PRIMARY KEY (billing_id)
+) ;
+
+-- Table: ChargeType
+CREATE TABLE ChargeType (
+    id integer  NOT NULL,
+    name varchar2(50)  NOT NULL,
+    cost_per_unit number(5,2)  NOT NULL,
+    CONSTRAINT ChargeType_pk PRIMARY KEY (id)
+) ;
+
+-- Table: Contract
+CREATE TABLE Contract (
+    contract_id integer  NOT NULL,
+    initial_credit integer  NOT NULL,
+    monthly_billing_period integer  NOT NULL,
+    Service_service_type_id integer  NOT NULL,
+    account_rental_charge number(10,2)  NOT NULL,
+    CONSTRAINT Contract_pk PRIMARY KEY (contract_id)
+) ;
+
+-- Table: Customer
+CREATE TABLE Customer (
+    customer_no integer  NOT NULL,
+    name varchar2(100)  NOT NULL,
+    address varchar2(255)  NOT NULL,
+    email varchar2(150)  NOT NULL,
+    CONSTRAINT Customer_pk PRIMARY KEY (customer_no)
+) ;
+
+-- Table: EmailSent
+CREATE TABLE EmailSent (
+    id integer  NOT NULL,
+    "date" timestamp  NOT NULL,
+    subject varchar2(255)  NOT NULL,
+    body varchar2(1000)  NOT NULL,
+    Service_service_type_id integer  NOT NULL,
+    CONSTRAINT EmailSent_pk PRIMARY KEY (id)
+) ;
+
+-- Table: Employee
+CREATE TABLE Employee (
+    employee_id integer  NOT NULL,
+    employee_name varchar2(20)  NOT NULL,
+    Position_position_id integer  NOT NULL,
+    CONSTRAINT Employee_pk PRIMARY KEY (employee_id)
+) ;
+
+-- Table: Phone
+CREATE TABLE Phone (
+    serial_no integer  NOT NULL,
+    Purchase_purchase_id integer  NOT NULL,
+    PhoneType_type_name integer  NOT NULL,
+    CONSTRAINT Phone_pk PRIMARY KEY (serial_no)
+) ;
+
+-- Table: PhoneManufacturer
+CREATE TABLE PhoneManufacturer (
+    name varchar2(75)  NOT NULL,
+    CONSTRAINT PhoneManufacturer_pk PRIMARY KEY (name)
+) ;
+
+-- Table: PhoneSimCard
+CREATE TABLE PhoneSimCard (
+    phone_sim_card integer  NOT NULL,
+    phone_no number(10,0)  NOT NULL,
+    CONSTRAINT PhoneSimCard_pk PRIMARY KEY (phone_sim_card)
+) ;
+
+-- Table: PhoneType
+CREATE TABLE PhoneType (
+    type_name integer  NOT NULL,
+    description varchar2(100)  NOT NULL,
+    phone_cost number(10,2)  NOT NULL,
+    allocated_credit integer  NOT NULL,
+    PhoneManufacturer_name varchar2(75)  NOT NULL,
+    CONSTRAINT PhoneType_pk PRIMARY KEY (type_name)
+) ;
+
+-- Table: Position
+CREATE TABLE Position (
+    position_id integer  NOT NULL,
+    position_name varchar2(20)  NOT NULL,
+    CONSTRAINT Position_pk PRIMARY KEY (position_id)
+) ;
+
+-- Table: PostMail
+CREATE TABLE PostMail (
+    mail_id integer  NOT NULL,
+    address_from varchar2(20)  NOT NULL,
+    Service_service_type_id integer  NOT NULL,
+    CONSTRAINT mail_id PRIMARY KEY (mail_id)
+) ;
+
+-- Table: Purchase
+CREATE TABLE Purchase (
+    purchase_id integer  NOT NULL,
+    PhoneSimCard_phone_sim_card integer  NOT NULL,
+    Contract_contract_id integer  NOT NULL,
+    Customer_customer_no integer  NOT NULL,
+    CONSTRAINT Purchase_pk PRIMARY KEY (purchase_id)
+) ;
+
+-- Table: ReturnOrder
+CREATE TABLE ReturnOrder (
+    id integer  NOT NULL,
+    Purchase_purchase_id integer  NOT NULL,
+    Store_storeNo integer  NOT NULL,
+    CONSTRAINT ReturnOrder_pk PRIMARY KEY (id)
+) ;
+
+-- Table: Service
+CREATE TABLE Service (
+    service_type_id integer  NOT NULL,
+    type_name varchar2(50)  NOT NULL,
+    Employee_employee_id integer  NOT NULL,
+    CONSTRAINT Service_pk PRIMARY KEY (service_type_id)
+) ;
+
+-- Table: Store
+CREATE TABLE Store (
+    storeNo integer  NOT NULL,
+    address varchar2(255)  NOT NULL,
+    phone_no number(10,0)  NOT NULL,
+    CONSTRAINT Store_pk PRIMARY KEY (storeNo)
+) ;
+
+-- Table: Usage
+CREATE TABLE Usage (
+    usage_id integer  NOT NULL,
+    usage_name varchar2(100)  NOT NULL,
+    duration number(7,2)  NULL,
+    provider varchar2(50)  NOT NULL,
+    usage_date DATE  NOT NULL,
+    Billing_billing_id integer  NOT NULL,
+    ChargeType_id integer  NOT NULL,
+    number_accessed varchar2(25)  NOT NULL,
+    CONSTRAINT Usage_pk PRIMARY KEY (usage_id)
+) ;
+
+
+-- foreign keys
+-- Reference: Billing_Contract (table: Billing)
+ALTER TABLE Billing ADD CONSTRAINT Billing_Contract
+    FOREIGN KEY (Contract_contract_id)
+    REFERENCES Contract (contract_id);
+
+-- Reference: Contract_Service (table: Contract)
+ALTER TABLE Contract ADD CONSTRAINT Contract_Service
+    FOREIGN KEY (Service_service_type_id)
+    REFERENCES Service (service_type_id);
+
+-- Reference: EmailSent_Service (table: EmailSent)
+ALTER TABLE EmailSent ADD CONSTRAINT EmailSent_Service
+    FOREIGN KEY (Service_service_type_id)
+    REFERENCES Service (service_type_id);
+
+-- Reference: Employee_Position (table: Employee)
+ALTER TABLE Employee ADD CONSTRAINT Employee_Position
+    FOREIGN KEY (Position_position_id)
+    REFERENCES Position (position_id);
+
+-- Reference: PhoneBought_Contract (table: Purchase)
+ALTER TABLE Purchase ADD CONSTRAINT PhoneBought_Contract
+    FOREIGN KEY (Contract_contract_id)
+    REFERENCES Contract (contract_id);
+
+-- Reference: PhoneBought_PhoneSimCard (table: Purchase)
+ALTER TABLE Purchase ADD CONSTRAINT PhoneBought_PhoneSimCard
+    FOREIGN KEY (PhoneSimCard_phone_sim_card)
+    REFERENCES PhoneSimCard (phone_sim_card);
+
+-- Reference: PhoneType_PhoneManufacturer (table: PhoneType)
+ALTER TABLE PhoneType ADD CONSTRAINT PhoneType_PhoneManufacturer
+    FOREIGN KEY (PhoneManufacturer_name)
+    REFERENCES PhoneManufacturer (name);
+
+-- Reference: Phone_PhoneType (table: Phone)
+ALTER TABLE Phone ADD CONSTRAINT Phone_PhoneType
+    FOREIGN KEY (PhoneType_type_name)
+    REFERENCES PhoneType (type_name);
+
+-- Reference: Phone_Purchase (table: Phone)
+ALTER TABLE Phone ADD CONSTRAINT Phone_Purchase
+    FOREIGN KEY (Purchase_purchase_id)
+    REFERENCES Purchase (purchase_id);
+
+-- Reference: PostMail_Service (table: PostMail)
+ALTER TABLE PostMail ADD CONSTRAINT PostMail_Service
+    FOREIGN KEY (Service_service_type_id)
+    REFERENCES Service (service_type_id);
+
+-- Reference: Purchase_Customer (table: Purchase)
+ALTER TABLE Purchase ADD CONSTRAINT Purchase_Customer
+    FOREIGN KEY (Customer_customer_no)
+    REFERENCES Customer (customer_no);
+
+-- Reference: ReturnOrder_Purchase (table: ReturnOrder)
+ALTER TABLE ReturnOrder ADD CONSTRAINT ReturnOrder_Purchase
+    FOREIGN KEY (Purchase_purchase_id)
+    REFERENCES Purchase (purchase_id);
+
+-- Reference: ReturnOrder_Store (table: ReturnOrder)
+ALTER TABLE ReturnOrder ADD CONSTRAINT ReturnOrder_Store
+    FOREIGN KEY (Store_storeNo)
+    REFERENCES Store (storeNo);
+
+-- Reference: Service_Employee (table: Service)
+ALTER TABLE Service ADD CONSTRAINT Service_Employee
+    FOREIGN KEY (Employee_employee_id)
+    REFERENCES Employee (employee_id);
+
+-- Reference: Usage_Billing (table: Usage)
+ALTER TABLE Usage ADD CONSTRAINT Usage_Billing
+    FOREIGN KEY (Billing_billing_id)
+    REFERENCES Billing (billing_id);
+
+-- Reference: Usage_ChargeType (table: Usage)
+ALTER TABLE Usage ADD CONSTRAINT Usage_ChargeType
+    FOREIGN KEY (ChargeType_id)
+    REFERENCES ChargeType (id);
+
+-- End of file.
+
+
+
+INSERT INTO CUSTOMER VALUES(1, 'Carlino Gonzalez', 'Merrion Sq.', 'carlino@carlino.com');
+INSERT INTO CUSTOMER VALUES(2, 'Cian Hackett', 'Hollywood', 'cian@carlino.com');
+INSERT INTO CUSTOMER VALUES(3, 'Valentin Ciceu', 'White House', 'valentin@carlino.com');
+INSERT INTO CUSTOMER VALUES(5, 'Tatiana Ugh', 'Dublin', 'tati@ughtatinet.com');
+
+INSERT INTO PHONESIMCARD VALUES(1, 834234320);
+INSERT INTO PHONESIMCARD VALUES(2, 863457218);
+INSERT INTO PHONESIMCARD VALUES(3, 837865432);
+INSERT INTO PHONESIMCARD VALUES(4, 844322458);
+
+
+INSERT INTO PHONEMANUFACTURER VALUES('Nokia');
+INSERT INTO PHONEMANUFACTURER VALUES('Apple');
+INSERT INTO PHONEMANUFACTURER VALUES('Motorola');
+INSERT INTO PHONEMANUFACTURER VALUES('Blackberry');
+INSERT INTO PHONEMANUFACTURER VALUES('Xiaomi');
+
+
+INSERT INTO PHONETYPE VALUES(6510, 'This phone is unkillable', 2, 10, 'Nokia');
+INSERT INTO PHONETYPE VALUES(3210, 'This phone is unkillable too', 5, 15, 'Nokia');
+INSERT INTO PHONETYPE VALUES(1121, 'iPhone XS', 1200, 120, 'Apple');
+INSERT INTO PHONETYPE VALUES(6577, 'Pocophone F1', 329, 50, 'Xiaomi');
+
+INSERT INTO POSITION VALUES(1, 'Background Staff');
+INSERT INTO POSITION VALUES(2, 'Retail Sales');
+INSERT INTO POSITION VALUES(3, 'Billing Staff');
+INSERT INTO POSITION VALUES(4, 'Cleaner');
+
+INSERT INTO EMPLOYEE VALUES(1, 'Cindy', 1);
+INSERT INTO EMPLOYEE VALUES(2, 'Ciaran', 2);
+INSERT INTO EMPLOYEE VALUES(3, 'Richard', 3);
+INSERT INTO EMPLOYEE VALUES(4, 'Denis', 4);
+
+INSERT INTO SERVICE VALUES(1, 'Walk in', 2);
+INSERT INTO SERVICE VALUES(2, 'Online', 1);
+INSERT INTO SERVICE VALUES(3, 'Online', 1);
+
+INSERT INTO POSTMAIL VALUES(1, 'Merrion SQ.', 2);
+INSERT INTO POSTMAIL VALUES(2, 'Ballymun', 3);
+
+INSERT INTO EMAILSENT VALUES(1, SYSDATE, 'Your new purchase', 'You are stuck with us for 2 years bro', 2);
+INSERT INTO EMAILSENT VALUES(2, SYSDATE, 'Your new purchase', 'You are stuck with us for 2.5 years bro', 3);
+
+--CREATE FUNCTION CREATE_CONTRACT
+
+INSERT INTO CONTRACT VALUES(1, -50, 60, 2, 80);
+INSERT INTO CONTRACT VALUES(2, -120, 60, 1, 35);
+INSERT INTO CONTRACT VALUES(3, -10, 60, 3, 10); -- val Nokia
+INSERT INTO CONTRACT VALUES(4, -120, 60, 3, 35); -- val Iphone
+
+INSERT INTO PURCHASE VALUES(1, 1, 1, 1);
+INSERT INTO PURCHASE VALUES(2, 2, 2, 2);
+INSERT INTO PURCHASE VALUES(3, 3, 3, 3); --val Nokia
+INSERT INTO PURCHASE VALUES(4, 4, 4, 3); -- val Iphone
+
+
+INSERT INTO PHONE VALUES(1, 1, 6577);
+INSERT INTO PHONE VALUES(2, 2, 1121);
+INSERT INTO PHONE VALUES(3, 3, 6510);
+INSERT INTO PHONE VALUES(4, 4, 1121);
+INSERT INTO PHONE VALUES(5, 5, 6510);
+
+
+
+
+INSERT INTO CHARGETYPE VALUES(1, 'SMS Myphone', 0.20);
+INSERT INTO CHARGETYPE VALUES(2, 'SMS Other Network', 0.40);
+INSERT INTO CHARGETYPE VALUES(3, 'Voice Call', 0.13);
+INSERT INTO CHARGETYPE VALUES(4, 'Download', 0.15);
+
+
+
+--first bills
+INSERT INTO BILLING VALUES(1, 50, SYSDATE, -50, 1);
+INSERT INTO BILLING VALUES(2, 80, SYSDATE, -80, 2);
+INSERT INTO BILLING VALUES(3, 10, SYSDATE, -10, 3);
+
+
+-- Carlino Usages
+INSERT INTO Usage VALUES(1, 'Call', 1, 'Vodafone', TO_DATE('2018/12/12', 'yyyy/mm/dd'), 1, 3, '+35386-765-123');
+INSERT INTO Usage VALUES(2, 'Call', 1, 'MyPhone', TO_DATE('2018/11/23', 'yyyy/mm/dd'), 1, 3, '+35386-765-123');
+INSERT INTO Usage VALUES(3, 'SMS Hotline', 1, 'Vodafone', TO_DATE('2018/12/22', 'yyyy/mm/dd'), 1, 1, '+35386-765-123');
+INSERT INTO Usage VALUES(4, 'Download XXX', 1, 'Vodafone', TO_DATE('2018/11/30', 'yyyy/mm/dd'), 1, 4, ' ');
+INSERT INTO Usage VALUES(5, 'Download App', 1, 'Vodafone', TO_DATE('2018/12/01', 'yyyy/mm/dd'), 1, 4, ' ');
+INSERT INTO Usage VALUES(6, 'Call', 4, 'Landline', TO_DATE('2018/12/22', 'yyyy/mm/dd'), 1, 3, '+256-792637946');
+INSERT INTO Usage VALUES(7, 'SMS Hotline', 1, 'MyPhone', TO_DATE('2018/12/11', 'yyyy/mm/dd'), 1, 2, '+35386-765-123');
+INSERT INTO Usage VALUES(8, 'Call', 7, 'Landline', TO_DATE('2018/12/22', 'yyyy/mm/dd'), 1, 3, '+256-765-123');
+
+
+INSERT INTO STORE VALUES(1, 'Stephen`s Green Shopping Centre, Dublin 02', 845645667);
+INSERT INTO STORE VALUES(2, 'Ballymun Store, Dublin 6', 831234561);
+INSERT INTO STORE VALUES(3, 'Mountain View, Hollywood', 76345122);
+INSERT INTO STORE VALUES(4, 'Puerta del Sol, Madrid', 876124678);
+INSERT INTO STORE VALUES(5, 'Praca do Comercio, Lisboa', 854357139);
+
+INSERT INTO RETURNORDER VALUES(1, 3, 3);
+
+commit;
+
+-- views
+-- View: BillingInvoice
+CREATE Or Replace VIEW BillingInvoice AS
+SELECT * FROM Billing
+RIGHT OUTER JOIN Usage ON Billing.billing_id = Usage.Billing_billing_id
+JOIN ChargeType ON Usage.ChargeType_id = ChargeType.id;
+
+
+-----------------------------------------------------------
+grant select on Customer to vciceu;
+grant select on Billing to vciceu;
+grant select on ChargeType to vciceu;
+grant select on Contract to vciceu;
+grant select on EmailSent to vciceu;
+grant select on Employee to vciceu;
+grant select on Phone to vciceu;
+grant select on PhoneManufacturer to vciceu;
+grant select on PhoneSimCard to vciceu;
+grant select on PhoneType to vciceu;
+grant select on Position to vciceu;
+grant select on PostMail to vciceu;
+grant select on Purchase to vciceu;
+grant select on ReturnOrder to vciceu;
+grant select on Service to vciceu;
+grant select on Store to vciceu;
+grant select on Usage to vciceu;
+
+grant select on Customer to chackett;
+grant select on Billing to chackett;
+grant select on ChargeType to chackett;
+grant select on Contract to chackett;
+grant select on EmailSent to chackett;
+grant select on Employee to chackett;
+grant select on Phone to chackett;
+grant select on PhoneManufacturer to chackett;
+grant select on PhoneSimCard to chackett;
+grant select on PhoneType to chackett;
+grant select on Position to chackett;
+grant select on PostMail to chackett;
+grant select on Purchase to chackett;
+grant select on ReturnOrder to chackett;
+grant select on Service to chackett;
+grant select on Store to chackett;
+grant select on Usage to chackett;
+
+grant select on Customer to cgperego;
+grant select on Billing to cgperego;
+grant select on ChargeType to cgperego;
+grant select on Contract to cgperego;
+grant select on EmailSent to cgperego;
+grant select on Employee to cgperego;
+grant select on Phone to cgperego;
+grant select on PhoneManufacturer to cgperego;
+grant select on PhoneSimCard to cgperego;
+grant select on PhoneType to cgperego;
+grant select on Position to cgperego;
+grant select on PostMail to cgperego;
+grant select on Purchase to cgperego;
+grant select on ReturnOrder to cgperego;
+grant select on Service to cgperego;
+grant select on Store to cgperego;
+grant select on Usage to cgperego;
+
+----------------------------------------------------------------
+grant insert on Customer to vciceu;
+grant insert on Billing to vciceu;
+grant insert on ChargeType to vciceu;
+grant insert on Contract to vciceu;
+grant insert on EmailSent to vciceu;
+grant insert on Employee to vciceu;
+grant insert on Phone to vciceu;
+grant insert on PhoneManufacturer to vciceu;
+grant insert on PhoneSimCard to vciceu;
+grant insert on PhoneType to vciceu;
+grant insert on Position to vciceu;
+grant insert on PostMail to vciceu;
+grant insert on Purchase to vciceu;
+grant insert on ReturnOrder to vciceu;
+grant insert on Service to vciceu;
+grant insert on Store to vciceu;
+grant insert on Usage to vciceu;
+
+grant insert on Customer to chackett;
+grant insert on Billing to chackett;
+grant insert on ChargeType to chackett;
+grant insert on Contract to chackett;
+grant insert on EmailSent to chackett;
+grant insert on Employee to chackett;
+grant insert on Phone to chackett;
+grant insert on PhoneManufacturer to chackett;
+grant insert on PhoneSimCard to chackett;
+grant insert on PhoneType to chackett;
+grant insert on Position to chackett;
+grant insert on PostMail to chackett;
+grant insert on Purchase to chackett;
+grant insert on ReturnOrder to chackett;
+grant insert on Service to chackett;
+grant insert on Store to chackett;
+grant insert on Usage to chackett;
+
+
+grant insert on Customer to cgperego;
+grant insert on Billing to cgperego;
+grant insert on ChargeType to cgperego;
+grant insert on Contract to cgperego;
+grant insert on EmailSent to cgperego;
+grant insert on Employee to cgperego;
+grant insert on Phone to cgperego;
+grant insert on PhoneManufacturer to cgperego;
+grant insert on PhoneSimCard to cgperego;
+grant insert on PhoneType to cgperego;
+grant insert on Position to cgperego;
+grant insert on PostMail to cgperego;
+grant insert on Purchase to cgperego;
+grant insert on ReturnOrder to cgperego;
+grant insert on Service to cgperego;
+grant insert on Store to cgperego;
+grant insert on Usage to cgperego;
+
+
+--------------------------------------------------------------------
+grant update on Customer to vciceu;
+grant update on Billing to vciceu;
+grant update on ChargeType to vciceu;
+grant update on Contract to vciceu;
+grant update on EmailSent to vciceu;
+grant update on Employee to vciceu;
+grant update on Phone to vciceu;
+grant update on PhoneManufacturer to vciceu;
+grant update on PhoneSimCard to vciceu;
+grant update on PhoneType to vciceu;
+grant update on Position to vciceu;
+grant update on PostMail to vciceu;
+grant update on Purchase to vciceu;
+grant update on ReturnOrder to vciceu;
+grant update on Service to vciceu;
+grant update on Store to vciceu;
+grant update on Usage to vciceu;
+
+
+grant update on Customer to chackett;
+grant update on Billing to chackett;
+grant update on ChargeType to chackett;
+grant update on Contract to chackett;
+grant update on EmailSent to chackett;
+grant update on Employee to chackett;
+grant update on Phone to chackett;
+grant update on PhoneManufacturer to chackett;
+grant update on PhoneSimCard to chackett;
+grant update on PhoneType to chackett;
+grant update on Position to chackett;
+grant update on PostMail to chackett;
+grant update on Purchase to chackett;
+grant update on ReturnOrder to chackett;
+grant update on Service to chackett;
+grant update on Store to chackett;
+grant update on Usage to chackett;
+
+
+grant update on Customer to cgperego;
+grant update on Billing to cgperego;
+grant update on ChargeType to cgperego;
+grant update on Contract to cgperego;
+grant update on EmailSent to cgperego;
+grant update on Employee to cgperego;
+grant update on Phone to cgperego;
+grant update on PhoneManufacturer to cgperego;
+grant update on PhoneSimCard to cgperego;
+grant update on PhoneType to cgperego;
+grant update on Position to cgperego;
+grant update on PostMail to cgperego;
+grant update on Purchase to cgperego;
+grant update on ReturnOrder to cgperego;
+grant update on Service to cgperego;
+grant update on Store to cgperego;
+grant update on Usage to cgperego;
+
+select * from usage;
+select * from chargetype;
+

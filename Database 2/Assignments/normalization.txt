@@ -1,0 +1,31 @@
+
+Customer
+UNF = customer_id + name + address + email
+
+customer_id(underline ie primary) + name + address + email
+
+Purchase
+UNF = purchase_id + customer_id + sim_card + contract_id
+
+
+Contract
+(customer_id + contract_id(underline)) + sim_card
+
+contract_id + initial_credit + monthly_billing_period + purchase_type_id
+
+Billing
+billing_id  + cost + paid + date + c/f + contract_id
+
+ReturnOrder
+return_id + (store_id FK_ + serial_no
+
+Store
+Store_id + address + phone + number
+
+Service
+puchase_type_id  + type_name
+
+Employee
+employee_id + employee_name + purchase_type_id
+
+Position
